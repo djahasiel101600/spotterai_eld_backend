@@ -1200,3 +1200,7 @@ def fix_trip_coordinates(request, trip_id):
             {'error': 'Failed to fix coordinates. Please try again.'}, 
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+def test_api(request):
+    """Test API endpoint"""
+    return Response({'message': 'API is working'}, status=status.HTTP_200_OK)

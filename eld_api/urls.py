@@ -10,4 +10,5 @@ urlpatterns = [
     path('trips/<int:trip_id>/', views.trip_detail, name='trip_detail'),
     path('trips/<int:trip_id>/logs/', views.get_daily_logs, name='get_daily_logs'),
     path('trips/<int:trip_id>/fix-coordinates/', views.fix_trip_coordinates, name='fix_trip_coordinates'),
+    path('test/', views.test_api, name='test_api'),
 ]
