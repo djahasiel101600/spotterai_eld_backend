@@ -34,6 +34,7 @@ class CarrierInfo(models.Model):
     home_terminal_address = models.CharField(max_length=500)
     truck_number = models.CharField(max_length=100)
     shipping_docs = models.CharField(max_length=200)
+    co_driver_name = models.CharField(max_length=200, blank=True, default='')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

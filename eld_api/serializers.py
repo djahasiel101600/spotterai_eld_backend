@@ -21,12 +21,13 @@ class CarrierInfoSerializer(serializers.ModelSerializer):
     homeTerminalAddress = serializers.CharField(source='home_terminal_address')
     truckNumber = serializers.CharField(source='truck_number')
     shippingDocs = serializers.CharField(source='shipping_docs')
+    coDriverName = serializers.CharField(source='co_driver_name', required=False, allow_blank=True)
     
     class Meta:
         model = CarrierInfo
         fields = [
             'driverName', 'carrierName', 'mainOfficeAddress', 
-            'homeTerminalAddress', 'truckNumber', 'shippingDocs'
+            'homeTerminalAddress', 'truckNumber', 'shippingDocs', 'coDriverName'
         ]
     
     def create(self, validated_data):

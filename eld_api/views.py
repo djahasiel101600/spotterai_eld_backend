@@ -903,7 +903,8 @@ def save_trip_to_database(inputs, carrier, route_data, events, logs, hos_config,
                 main_office_address=carrier.get('mainOfficeAddress', ''),
                 home_terminal_address=carrier.get('homeTerminalAddress', ''),
                 truck_number=carrier.get('truckNumber', ''),
-                shipping_docs=carrier.get('shippingDocs', '')
+                shipping_docs=carrier.get('shippingDocs', ''),
+                co_driver_name=carrier.get('coDriverName', ''),
             )
         
         # Parse start time with timezone awareness
