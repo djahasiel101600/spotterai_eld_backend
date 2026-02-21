@@ -480,10 +480,12 @@ def generate_duty_events(route_data, start_time, hos_config, average_speed=55, t
     drive_to_pickup = total_driving * pickup_ratio
     drive_to_dropoff = total_driving * (1 - pickup_ratio)
     
-    # Track shift hours
+    # Track shift hours and fuel
     shift_driving = 0
     shift_duty = 0
     since_break = 0
+    miles_since_fuel = 0.0
+    fuel_interval_miles = 1000  # Insert Fueling Stop every 1000 miles along route
     
     # 2. PRE-TRIP INSPECTION
     add_event("on_duty_not_driving", 0.25, origin_coords['address'], 
@@ -493,6 +495,13 @@ def generate_duty_events(route_data, start_time, hos_config, average_speed=55, t
     # 3. DRIVING TO PICKUP
     remaining = drive_to_pickup
     while remaining > 0.01:
+        # Check for fuel stop (positioned along route via polyline)
+        if miles_since_fuel >= fuel_interval_miles:
+            add_event("on_duty_not_driving", 0.5, "Fuel Station", "Fueling Stop")
+            shift_duty += 0.5
+            miles_since_fuel = 0.0
+            continue
+        
         # Check for break
         if since_break >= break_after:
             add_event("off_duty", break_mins / 60, "Rest Area", f"{break_mins}-min Break")
@@ -512,6 +521,8 @@ def generate_duty_events(route_data, start_time, hos_config, average_speed=55, t
             break
         
         add_event("driving", max_segment, "En Route to Pickup", "Driving to Pickup Location")
+        segment_miles = (max_segment / total_driving * total_distance) if total_driving else (max_segment * average_speed)
+        miles_since_fuel += segment_miles
         remaining -= max_segment
         shift_driving += max_segment
         shift_duty += max_segment
@@ -525,6 +536,13 @@ def generate_duty_events(route_data, start_time, hos_config, average_speed=55, t
     # 5. DRIVING TO DROPOFF
     remaining = drive_to_dropoff
     while remaining > 0.01:
+        # Check for fuel stop (positioned along route via polyline)
+        if miles_since_fuel >= fuel_interval_miles:
+            add_event("on_duty_not_driving", 0.5, "Fuel Station", "Fueling Stop")
+            shift_duty += 0.5
+            miles_since_fuel = 0.0
+            continue
+        
         # Check driving limit
         if shift_driving >= max_driving or shift_duty >= max_duty:
             add_event("sleeper_berth", rest_hours, "Truck Stop", f"{rest_hours}h Daily Rest")
@@ -555,6 +573,8 @@ def generate_duty_events(route_data, start_time, hos_config, average_speed=55, t
             continue
         
         add_event("driving", max_segment, "En Route to Dropoff", "Driving to Delivery Location")
+        segment_miles = (max_segment / total_driving * total_distance) if total_driving else (max_segment * average_speed)
+        miles_since_fuel += segment_miles
         remaining -= max_segment
         shift_driving += max_segment
         shift_duty += max_segment
