@@ -424,8 +424,14 @@ def generate_duty_events(route_data, start_time, hos_config, average_speed=55, t
             coords = get_coordinate_at_distance(current_distance, route_data.get('polyline', []))
             lat, lng = coords['lat'], coords['lng']
         
-        # Calculate miles
-        miles = duration * average_speed if status == 'driving' else 0
+        # Calculate miles: use actual route distance proportionally so total matches route (e.g. 1440 mi / 21 hr)
+        if status == 'driving':
+            if total_driving and total_driving > 0 and total_distance and total_distance > 0:
+                miles = (duration / total_driving) * total_distance
+            else:
+                miles = duration * average_speed
+        else:
+            miles = 0
         
         events.append({
             'status': status,
